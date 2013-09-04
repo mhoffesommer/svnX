@@ -1198,6 +1198,18 @@ svnInfoReceiver (void*     baton,
 				if ([urlString characterAtIndex: [urlString length] - 1] != '/')
 					urlString = [urlString stringByAppendingString: @"/"];
 
+                // if URL is in the form https://username@... then remove
+                // the username from it
+                if ([urlString hasPrefix:@"https://"])
+                {
+                    NSRange r=[urlString rangeOfString:@"@"];
+                    if (r.location>0)
+                    {
+                        NSString* rest=[urlString substringFromIndex:r.location+1];
+                        urlString = [@"https://" stringByAppendingString:rest];
+                    }
+                }
+                
 				[self setRepositoryUrl: [NSURL URLWithString: urlString]];
 				gotURL = true;
 			}
